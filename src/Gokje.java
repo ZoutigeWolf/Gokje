@@ -32,7 +32,7 @@ public class Gokje {
     public static int computerScore = 0;
 
     public static void main(String[] args) {
-        int input = getSelectionInput("Welcome to Gokje, please select a gamemode to start\n\nPlayer score: %s\nComputer score: %s".formatted(playerScore, computerScore), new String[]{ "Player guesses", "Computer guesses", "Help", "Quit" });
+        int input = getSelectionInput("Welcome to Gokje, please select a gamemode to start\n\nPlayer score: %s\nComputer score: %s".formatted(playerScore, computerScore), new String[]{ "Player guesses", "Computer guesses", "Help" });
 
         switch (input) {
             case 0:
