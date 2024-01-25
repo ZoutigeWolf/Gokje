@@ -48,7 +48,7 @@ public class Gokje {
                 break;
 
             default:
-                return;
+                System.exit(0);
         }
 
         main(args);
@@ -84,7 +84,7 @@ public class Gokje {
     public static void startComputer() {
         Difficulty selectedDifficulty = generateDifficulty();
         int upperBound = numberRanges.get(selectedDifficulty);
-        int number = getNumberInput("The computer has selected the %s difficulty! choose a number between 1 and %s (inclusive)".formatted(selectedDifficulty.name(), upperBound));
+        int number = getNumberInput("The computer has selected the %s difficulty!\nChoose a number between 1 and %s (inclusive)".formatted(selectedDifficulty.name(), upperBound), 1, upperBound);
         int tries = 0;
         Random random = new Random();
 
@@ -92,7 +92,7 @@ public class Gokje {
             int guess = random.nextInt(1, upperBound + 1);
 
             if (guess == number) {
-                showMessage("The computer guessed the correct number!", JOptionPane.INFORMATION_MESSAGE);
+                showMessage("The computer guessed %s, that is the correct number!".formatted(guess), JOptionPane.INFORMATION_MESSAGE);
                 computerScore++;
                 return;
             }
@@ -155,11 +155,20 @@ public class Gokje {
 
     public static Difficulty GetDifficulty() {
         Object selection = getDropdownInput("Select difficulty", new String[]{ Difficulty.Easy.name(), Difficulty.Medium.name(), Difficulty.Hard.name(), Difficulty.Insane.name() });
+
+        if (selection == null) {
+            System.exit(0);
+        }
+
         return Difficulty.valueOf(selection.toString());
     }
 
     public static int getNumberInput(String message) {
         String input = JOptionPane.showInputDialog(null, message, WINDOW_TITLE, JOptionPane.QUESTION_MESSAGE);
+
+        if (input == null) {
+            System.exit(0);
+        }
 
         try {
             return Integer.parseInt(input);
@@ -167,6 +176,18 @@ public class Gokje {
             showMessage("\"%s\" is not a valid number".formatted(input), JOptionPane.ERROR_MESSAGE);
             return getNumberInput(message);
         }
+    }
+
+    public static int getNumberInput(String message, int min, int max) {
+        int input = getNumberInput(message);
+
+
+        if (input < min || input > max) {
+            showMessage("\"%s\" is not a valid number".formatted(input), JOptionPane.ERROR_MESSAGE);
+            input = getNumberInput(message, min, max);
+        }
+
+        return input;
     }
 
     public static int getSelectionInput(String message, String[] options) {
