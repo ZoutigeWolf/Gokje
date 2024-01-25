@@ -32,7 +32,10 @@ public class Gokje {
     public static int computerScore = 0;
 
     public static void main(String[] args) {
-        int input = getSelectionInput("Welcome to Gokje, please select a gamemode to start\n\nPlayer score: %s\nComputer score: %s".formatted(playerScore, computerScore), new String[]{ "Player guesses", "Computer guesses", "Help" });
+        int input = getSelectionInput(
+                "Welcome to Gokje, please select a gamemode to start\n\nPlayer score: %s\nComputer score: %s"
+                        .formatted(playerScore, computerScore),
+                new String[]{ "Player guesses", "Computer guesses", "Help" });
 
         switch (input) {
             case 0:
@@ -49,6 +52,7 @@ public class Gokje {
 
             default:
                 System.exit(0);
+                return;
         }
 
         main(args);
@@ -60,7 +64,8 @@ public class Gokje {
         int tries = 0;
 
         while (true) {
-            int guess = getNumberInput("Guess a number! %s %s remaining".formatted(MAX_GUESSES - tries, MAX_GUESSES - tries == 1 ? "try" : "tries"));
+            int guess = getNumberInput("Guess a number! %s %s remaining"
+                    .formatted(MAX_GUESSES - tries, MAX_GUESSES - tries == 1 ? "try" : "tries"));
 
             if (guess == number) {
                 showMessage("Congrats! You guessed the number", JOptionPane.INFORMATION_MESSAGE);
@@ -74,7 +79,8 @@ public class Gokje {
                 break;
             }
 
-            showMessage("That's the wrong number! go a little %s".formatted(guess < number ? "higher" : "lower"), JOptionPane.INFORMATION_MESSAGE);
+            showMessage("That's the wrong number! go a little %s".formatted(guess < number ? "higher" : "lower"),
+                    JOptionPane.INFORMATION_MESSAGE);
         }
 
         showMessage("You're out of guesses! the number was %s".formatted(number), JOptionPane.INFORMATION_MESSAGE);
@@ -83,23 +89,33 @@ public class Gokje {
 
     public static void startComputer() {
         Difficulty selectedDifficulty = generateDifficulty();
+
         int upperBound = numberRanges.get(selectedDifficulty);
-        int number = getNumberInput("The computer has selected the %s difficulty!\nChoose a number between 1 and %s (inclusive)".formatted(selectedDifficulty.name(), upperBound), 1, upperBound);
+        int number = getNumberInput(
+                "The computer has selected the %s difficulty!\nChoose a number between 1 and %s (inclusive)"
+                        .formatted(selectedDifficulty.name(), upperBound),
+                1, upperBound);
+
         int tries = 0;
-        Random random = new Random();
+        int[] prevGuesses = new int[MAX_GUESSES];
 
         while (true) {
-            int guess = random.nextInt(1, upperBound + 1);
+            int guess = generateNumber(selectedDifficulty, prevGuesses);
 
             if (guess == number) {
-                showMessage("The computer guessed %s, that is the correct number!".formatted(guess), JOptionPane.INFORMATION_MESSAGE);
+                showMessage("The computer guessed %s, that is the correct number!".formatted(guess),
+                        JOptionPane.INFORMATION_MESSAGE);
+
                 computerScore++;
                 return;
             }
 
+            prevGuesses[tries] = guess;
             tries++;
 
-            showMessage("The computer guessed %s! it has %s %s remaining".formatted(guess, MAX_GUESSES - tries, MAX_GUESSES - tries == 1 ? "try" : "tries"), JOptionPane.INFORMATION_MESSAGE);
+            showMessage("The computer guessed %s! it has %s %s remaining"
+                    .formatted(guess, MAX_GUESSES - tries, MAX_GUESSES - tries == 1 ? "try" : "tries"),
+                    JOptionPane.INFORMATION_MESSAGE);
 
             if (tries == MAX_GUESSES) {
                 break;
@@ -149,12 +165,27 @@ public class Gokje {
         return new Random().nextInt(1, numberRanges.get(difficulty) + 1);
     }
 
+    public static int generateNumber(Difficulty difficulty, int[] excluded) {
+        int n = generateNumber(difficulty);
+
+        if (Arrays.stream(excluded).anyMatch(i -> i == n)) {
+            return generateNumber(difficulty, excluded);
+        }
+
+        return n;
+    }
+
     public static Difficulty generateDifficulty() {
         return Difficulty.values()[new Random().nextInt(Difficulty.values().length)];
     }
 
     public static Difficulty GetDifficulty() {
-        Object selection = getDropdownInput("Select difficulty", new String[]{ Difficulty.Easy.name(), Difficulty.Medium.name(), Difficulty.Hard.name(), Difficulty.Insane.name() });
+        Object selection = getDropdownInput("Select difficulty", new String[]{
+                Difficulty.Easy.name(),
+                Difficulty.Medium.name(),
+                Difficulty.Hard.name(),
+                Difficulty.Insane.name()
+        });
 
         if (selection == null) {
             System.exit(0);
@@ -164,7 +195,8 @@ public class Gokje {
     }
 
     public static int getNumberInput(String message) {
-        String input = JOptionPane.showInputDialog(null, message, WINDOW_TITLE, JOptionPane.QUESTION_MESSAGE);
+        String input = JOptionPane.showInputDialog(null, message, WINDOW_TITLE,
+                JOptionPane.QUESTION_MESSAGE);
 
         if (input == null) {
             System.exit(0);
@@ -191,11 +223,13 @@ public class Gokje {
     }
 
     public static int getSelectionInput(String message, String[] options) {
-        return JOptionPane.showOptionDialog(null, message, WINDOW_TITLE, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+        return JOptionPane.showOptionDialog(null, message, WINDOW_TITLE, JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, null);
     }
 
     public static Object getDropdownInput(String message, String[] options) {
-        return JOptionPane.showInputDialog(null, message, WINDOW_TITLE, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        return JOptionPane.showInputDialog(null, message, WINDOW_TITLE, JOptionPane.INFORMATION_MESSAGE,
+                null, options, options[0]);
     }
 
     public static void showMessage(String message, int messageType) {
