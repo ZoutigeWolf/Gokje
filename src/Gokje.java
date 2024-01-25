@@ -6,6 +6,8 @@
 //
 //
 
+import com.sun.tools.javac.Main;
+
 import javax.swing.*;
 import java.util.*;
 
@@ -188,7 +190,8 @@ public class Gokje {
         });
 
         if (selection == null) {
-            System.exit(0);
+            main(null);
+            return null;
         }
 
         return Difficulty.valueOf(selection.toString());
@@ -199,7 +202,8 @@ public class Gokje {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (input == null) {
-            System.exit(0);
+            main(null);
+            return 0;
         }
 
         try {
